@@ -22,7 +22,7 @@ table { border-collapse: collapse; margin-top: 20px; width: 100%; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
 </style>
 </head>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <body>
 
 <h1>Fencing Strategy Dataset Builder</h1>
@@ -122,6 +122,12 @@ th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
 </table>
 
 <button onclick="downloadCSV()">Download CSV</button>
+<script>
+  const SUPABASE_URL = "https://uwprqsnidvdhchcipsvr.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV3cHJxc25pZHZkaGNoY2lwc3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2OTU1MzUsImV4cCI6MjA4MTI3MTUzNX0._et7WH9IQlMFtYbZg-UF9D5iucz92coNE8LfGAWeaOQ";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
+
 
 <script>
 let entry = {};
@@ -137,23 +143,32 @@ function select(btn) {
   entry[field] = value;
 }
 
-function addRow() {
+async function addRow() {
+  const payload = {
+  distance_behavior: entry.distance_behavior || null,
+  opening_action: entry.opening_action || null,
+  attack_style: entry.attack_style || null,
+  attack_timing: entry.attack_timing || null,
+  attack_finish_line: entry.attack_finish_line || null,
+  defense_preference: entry.defense_preference || null,
+  reaction_to_pressure: entry.reaction_to_pressure || null,
+  common_mistake: document.getElementById("common_mistake").value || null,
+  your_strategy_used: document.getElementById("your_strategy_used").value || null,
+  your_condition: document.getElementById("your_condition").value,
+  result: document.getElementById("result").value
+};
+
+  const { error } = await sb.from("fencing_matches").insert([payload]);
+
+  if (error) {
+    alert("Insert failed: " + error.message);
+    return;
+  }
+
   const table = document.getElementById("dataTable");
   const row = table.insertRow();
+  Object.values(payload).forEach(v => row.insertCell().innerText = v ?? "");
 
-  row.insertCell().innerText = entry.distance_behavior || "";
-  row.insertCell().innerText = entry.opening_action || "";
-  row.insertCell().innerText = entry.attack_style || "";
-  row.insertCell().innerText = entry.attack_timing || "";
-  row.insertCell().innerText = entry.attack_finish_line || "";
-  row.insertCell().innerText = entry.defense_preference || "";
-  row.insertCell().innerText = entry.reaction_to_pressure || "";
-  row.insertCell().innerText = document.getElementById("common_mistake").value;
-  row.insertCell().innerText = document.getElementById("your_strategy_used").value;
-  row.insertCell().innerText = document.getElementById("your_condition").value;
-  row.insertCell().innerText = document.getElementById("result").value;
-
-  // Reset
   entry = {};
   document.querySelectorAll("button.selected").forEach(b => b.classList.remove("selected"));
   document.getElementById("your_strategy_used").value = "";
@@ -176,3 +191,4 @@ function downloadCSV() {
 
 </body>
 </html>
+
