@@ -2,102 +2,175 @@
 <html>
 <head>
 <title>Fencing Strategy Dataset Builder</title>
+
 <style>
 body { font-family: Arial; margin: 20px; }
 .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+h2 { margin-top: 0; }
+button {
+  margin: 4px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+}
+button.selected { background: #28a745; }
+textarea, select { width: 100%; padding: 6px; margin-top: 6px; }
 table { border-collapse: collapse; margin-top: 20px; width: 100%; }
 th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-button { margin: 4px; padding: 8px 12px; border: none; border-radius: 6px; background: #007bff; color: white; }
-button.selected { background: #28a745; }
-textarea { width: 100%; height: 80px; }
 </style>
 </head>
+
 <body>
 
 <h1>Fencing Strategy Dataset Builder</h1>
 
-<!-- FORM AREA -->
+<!-- ================= OPPONENT BEHAVIOUR ================= -->
+
 <div class="section">
-<h2>Opponent Traits</h2>
-<button type="button" onclick="toggle(this)">Steps Forward</button>
-<button type="button" onclick="toggle(this)">Waits</button>
-<button type="button" onclick="toggle(this)">Steps Back</button>
-<button type="button" onclick="toggle(this)">Simple Attack</button>
-<button type="button" onclick="toggle(this)">Beat Attack</button>
-<button type="button" onclick="toggle(this)">Compound Attack</button>
-<button type="button" onclick="toggle(this)">Nothing</button>
-<button type="button" onclick="toggle(this)">High Line Finish</button>
-<button type="button" onclick="toggle(this)">Low Line Finish</button>
-<button type="button" onclick="toggle(this)">Fleche</button>
-<button type="button" onclick="toggle(this)">Multi‑Feint</button>
-<button type="button" onclick="toggle(this)">Sudden Far Attack</button>
-<button type="button" onclick="toggle(this)">Prep‑Step Timing</button>
+<h2>Opponent Behaviour</h2>
 
-<h3>Your Strategy Used</h3>
-<textarea id="strategy"></textarea>
+<h4>Distance Behaviour</h4>
+<button data-field="distance_behavior" data-value="forward" onclick="select(this)">Steps Forward</button>
+<button data-field="distance_behavior" data-value="wait" onclick="select(this)">Waits</button>
+<button data-field="distance_behavior" data-value="backward" onclick="select(this)">Steps Back</button>
 
-<h3>Result</h3>
+<h4>Opening Action</h4>
+<button data-field="opening_action" data-value="simple" onclick="select(this)">Simple Attack</button>
+<button data-field="opening_action" data-value="beat" onclick="select(this)">Beat Attack</button>
+<button data-field="opening_action" data-value="compound" onclick="select(this)">Compound</button>
+<button data-field="opening_action" data-value="none" onclick="select(this)">Nothing</button>
+
+<h4>Attack Style</h4>
+<button data-field="attack_style" data-value="lunge" onclick="select(this)">Lunge</button>
+<button data-field="attack_style" data-value="fleche" onclick="select(this)">Fleche</button>
+<button data-field="attack_style" data-value="multifeint" onclick="select(this)">Multi‑Feint</button>
+
+<h4>Attack Timing</h4>
+<button data-field="attack_timing" data-value="sudden" onclick="select(this)">Sudden</button>
+<button data-field="attack_timing" data-value="prepared" onclick="select(this)">Prepared</button>
+
+<h4>Finish Line</h4>
+<button data-field="attack_finish_line" data-value="high" onclick="select(this)">High Line</button>
+<button data-field="attack_finish_line" data-value="low" onclick="select(this)">Low Line</button>
+
+<h4>Defensive Preference</h4>
+<button data-field="defense_preference" data-value="parry4" onclick="select(this)">Parry 4</button>
+<button data-field="defense_preference" data-value="parry6" onclick="select(this)">Parry 6</button>
+<button data-field="defense_preference" data-value="counter" onclick="select(this)">Counter‑Attack</button>
+
+<h4>Reaction Under Pressure</h4>
+<button data-field="reaction_to_pressure" data-value="aggressive" onclick="select(this)">Aggressive</button>
+<button data-field="reaction_to_pressure" data-value="passive" onclick="select(this)">Passive</button>
+<button data-field="reaction_to_pressure" data-value="panic" onclick="select(this)">Panic</button>
+
+<h4>Common Mistake</h4>
+<select id="common_mistake">
+  <option value="">None</option>
+  <option value="overreacts_to_feint">Overreacts to Feints</option>
+  <option value="poor_low_parry">Poor Low Parry</option>
+  <option value="predictable_finish">Predictable Finish</option>
+</select>
+
+</div>
+
+<!-- ================= YOU ================= -->
+
+<div class="section">
+<h2>Your Side</h2>
+
+<h4>Your Strategy Used</h4>
+<textarea id="your_strategy_used"></textarea>
+
+<h4>Your Condition</h4>
+<select id="your_condition">
+  <option value="fresh">Fresh</option>
+  <option value="tired">Tired</option>
+  <option value="injured">Injured</option>
+</select>
+
+<h4>Result</h4>
 <select id="result">
   <option value="win">Win</option>
   <option value="lose">Lose</option>
 </select>
 
 <br><br>
-<button onclick="addRow()">Add Row to Dataset</button>
+<button onclick="addRow()">Add Entry</button>
 </div>
 
-<!-- DATA TABLE -->
+<!-- ================= DATASET ================= -->
+
 <h2>Current Dataset</h2>
+
 <table id="dataTable">
-  <tr>
-    <th>opponent_traits</th>
-    <th>strategy_used</th>
-    <th>result</th>
-  </tr>
+<tr>
+<th>distance_behavior</th>
+<th>opening_action</th>
+<th>attack_style</th>
+<th>attack_timing</th>
+<th>finish_line</th>
+<th>defense</th>
+<th>pressure</th>
+<th>mistake</th>
+<th>your_strategy</th>
+<th>condition</th>
+<th>result</th>
+</tr>
 </table>
 
 <button onclick="downloadCSV()">Download CSV</button>
 
 <script>
-function toggle(btn) {
-    btn.classList.toggle("selected");
+let entry = {};
+
+function select(btn) {
+  const field = btn.dataset.field;
+  const value = btn.dataset.value;
+
+  document.querySelectorAll(`button[data-field="${field}"]`)
+    .forEach(b => b.classList.remove("selected"));
+
+  btn.classList.add("selected");
+  entry[field] = value;
 }
 
-// Add row to the table
 function addRow() {
-    const traits = [...document.querySelectorAll("button.selected")]
-        .map(b => b.textContent)
-        .join(" | ");
+  const table = document.getElementById("dataTable");
+  const row = table.insertRow();
 
-    const strategy = document.getElementById("strategy").value;
-    const result = document.getElementById("result").value;
+  row.insertCell().innerText = entry.distance_behavior || "";
+  row.insertCell().innerText = entry.opening_action || "";
+  row.insertCell().innerText = entry.attack_style || "";
+  row.insertCell().innerText = entry.attack_timing || "";
+  row.insertCell().innerText = entry.attack_finish_line || "";
+  row.insertCell().innerText = entry.defense_preference || "";
+  row.insertCell().innerText = entry.reaction_to_pressure || "";
+  row.insertCell().innerText = document.getElementById("common_mistake").value;
+  row.insertCell().innerText = document.getElementById("your_strategy_used").value;
+  row.insertCell().innerText = document.getElementById("your_condition").value;
+  row.insertCell().innerText = document.getElementById("result").value;
 
-    const table = document.getElementById("dataTable");
-    const row = table.insertRow();
-
-    row.insertCell(0).innerText = traits;
-    row.insertCell(1).innerText = strategy;
-    row.insertCell(2).innerText = result;
-
-    // Reset form
-    document.querySelectorAll("button.selected").forEach(b => b.classList.remove("selected"));
-    document.getElementById("strategy").value = "";
+  // Reset
+  entry = {};
+  document.querySelectorAll("button.selected").forEach(b => b.classList.remove("selected"));
+  document.getElementById("your_strategy_used").value = "";
 }
 
-// Download the CSV
 function downloadCSV() {
-    const rows = [...document.querySelectorAll("#dataTable tr")];
-    const csv = rows.map(row =>
-        [...row.children].map(cell => `"${cell.innerText}"`).join(",")
-    ).join("\n");
+  const rows = [...document.querySelectorAll("#dataTable tr")];
+  const csv = rows.map(row =>
+    [...row.children].map(cell => `"${cell.innerText}"`).join(",")
+  ).join("\n");
 
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-
-    a.href = url;
-    a.download = "fencing_dataset.csv";
-    a.click();
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "fencing_dataset.csv";
+  a.click();
 }
 </script>
 
