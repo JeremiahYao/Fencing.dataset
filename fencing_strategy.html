@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fencing Strategy Dataset Builder</title>
+<style>
+body { font-family: Arial; margin: 20px; }
+.section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+table { border-collapse: collapse; margin-top: 20px; width: 100%; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+button { margin: 4px; padding: 8px 12px; border: none; border-radius: 6px; background: #007bff; color: white; }
+button.selected { background: #28a745; }
+textarea { width: 100%; height: 80px; }
+</style>
+</head>
+<body>
+
+<h1>Fencing Strategy Dataset Builder</h1>
+
+<!-- FORM AREA -->
+<div class="section">
+<h2>Opponent Traits</h2>
+<button type="button" onclick="toggle(this)">Steps Forward</button>
+<button type="button" onclick="toggle(this)">Waits</button>
+<button type="button" onclick="toggle(this)">Steps Back</button>
+<button type="button" onclick="toggle(this)">Simple Attack</button>
+<button type="button" onclick="toggle(this)">Beat Attack</button>
+<button type="button" onclick="toggle(this)">Compound Attack</button>
+<button type="button" onclick="toggle(this)">Nothing</button>
+<button type="button" onclick="toggle(this)">High Line Finish</button>
+<button type="button" onclick="toggle(this)">Low Line Finish</button>
+<button type="button" onclick="toggle(this)">Fleche</button>
+<button type="button" onclick="toggle(this)">Multi‑Feint</button>
+<button type="button" onclick="toggle(this)">Sudden Far Attack</button>
+<button type="button" onclick="toggle(this)">Prep‑Step Timing</button>
+
+<h3>Your Strategy Used</h3>
+<textarea id="strategy"></textarea>
+
+<h3>Result</h3>
+<select id="result">
+  <option value="win">Win</option>
+  <option value="lose">Lose</option>
+</select>
+
+<br><br>
+<button onclick="addRow()">Add Row to Dataset</button>
+</div>
+
+<!-- DATA TABLE -->
+<h2>Current Dataset</h2>
+<table id="dataTable">
+  <tr>
+    <th>opponent_traits</th>
+    <th>strategy_used</th>
+    <th>result</th>
+  </tr>
+</table>
+
+<button onclick="downloadCSV()">Download CSV</button>
+
+<script>
+function toggle(btn) {
+    btn.classList.toggle("selected");
+}
+
+// Add row to the table
+function addRow() {
+    const traits = [...document.querySelectorAll("button.selected")]
+        .map(b => b.textContent)
+        .join(" | ");
+
+    const strategy = document.getElementById("strategy").value;
+    const result = document.getElementById("result").value;
+
+    const table = document.getElementById("dataTable");
+    const row = table.insertRow();
+
+    row.insertCell(0).innerText = traits;
+    row.insertCell(1).innerText = strategy;
+    row.insertCell(2).innerText = result;
+
+    // Reset form
+    document.querySelectorAll("button.selected").forEach(b => b.classList.remove("selected"));
+    document.getElementById("strategy").value = "";
+}
+
+// Download the CSV
+function downloadCSV() {
+    const rows = [...document.querySelectorAll("#dataTable tr")];
+    const csv = rows.map(row =>
+        [...row.children].map(cell => `"${cell.innerText}"`).join(",")
+    ).join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "fencing_dataset.csv";
+    a.click();
+}
+</script>
+
+</body>
+</html>
